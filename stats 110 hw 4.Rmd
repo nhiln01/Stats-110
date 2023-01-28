@@ -1,0 +1,161 @@
+---
+title: "Stats 110 Homework 4"
+author: "Nhi Nguyen"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1.a. Since the outlier is in the $Y$ value, it will have a small influence on the estimated $\hat{\beta_1}$, since $\hat{\beta_1}$ mostly corresponds with $X$ values.
+  b. This observation has no influence $\hat{\beta_1}$, since the $Y$ value is not unusual given the $X$ value. 
+  c. This observation will have large influence on $\hat{\beta_1},$ since both $X$ value and $Y$ value given $X$ are outliers. 
+  
+```{r}
+Bodymass <- read.csv("C:/Users/nhing/Stats 110 Dataset/bodymass.csv", fill=TRUE, header=TRUE)
+plot(Bodymass$height,Bodymass$bodymass, xlab="Height" , ylab="Body Mass")
+abline(lm(bodymass~height, data=Bodymass))
+```
+2. a. Height and body mass have a positive correlation. As height increases, body mass seems to increase too.
+   b. The adjusted R squared value is $0.773$.
+```{r}
+model.bodymass = lm(bodymass~height, data= Bodymass)
+summary(model.bodymass)
+```
+   c. Both plots are shown below
+```{r}
+plot( fitted(model.bodymass) , resid(model.bodymass) , xlab="Fitted values" , ylab="Residuals" , main="Residuals vs Fitted") 
+lines(lowess(x=fitted(model.bodymass), y=resid(model.bodymass)), col="red")
+```
+```{r}
+qqnorm(rstandard(model.bodymass))
+```
+
+   d. Based on the plots in part c, we can accept the normality assumption since the qqplot doesn't show any issues, but we cannot accept the linearity assumption because the residual vs fitted graph doesn't show a linear pattern.
+   e. 
+```{r}
+bodymass.fit = lm(bodymass~height + I(height^2), data=Bodymass)
+summary(bodymass.fit)
+```
+   f. Null hypothesis: $H_0: \beta_2 = 0$
+      Alternate hypothesis: $H_A: \beta_2 \neq 0$
+      p value: $0.000169$
+      We reject the null hypothesis, because the p value is < $\alpha = 0.05.$ We claim that the term $\beta_2$ is statistically significant in our model.
+   g. From the model in part e, the adjusted R-squared is $0.802$. It is better than the adjusted R-squared value from part b, which was $0.773$.
+   h. Looking at the graph below, we see a slight curve down from fitted values of $70$ to $80$, and a slight curve up from $80$ to $90$.
+```{r}
+plot( fitted(bodymass.fit) , resid(bodymass.fit) , xlab="Fitted values" , ylab="Residuals" , main="Residuals vs Fitted") 
+lines(lowess(x=fitted(bodymass.fit), y=resid(bodymass.fit)), col="red")
+```
+   i. Null hypothesis: $H_0: \beta_1 = \beta_2 = 0$
+      Alternate hypothesis: $H_A:$ either $\beta_1 \neq 0, \beta_2 \neq 0$, or both $\beta_1,\beta_2 \neq 0$
+      Our p-values are $0.009969$ for $\beta_0$, $0.007361$ for $\beta_1$, and $0.000169$ for $\beta_2.$ Since all three values are less than $\alpha = 0.05$, we reject the null hypothesis and conclude that the alternate hypothesis is true.
+   j. Here are the VIF values for both height and height^2. They are the same.
+```{r}
+library(car)
+vif(bodymass.fit)
+```
+   k. Using the model from part e, if we increase height by 1cm, body mass goes up by around 1kg. If we increase height by 5cm, body mass goes up around 6kg
+   l. The highest leverage is when body mass equals to $106.60295$ and height equals $201.2101$, with leverage $0.13450811$
+```{r}
+Bodymass$leverage = hatvalues(bodymass.fit)
+head(Bodymass[order(Bodymass$leverage, decreasing=TRUE),])
+```
+   
+3. a. Male and Female: $-1.00$
+      RtFoot and LeftFoot: $0.9438130$
+      HeadCirc and RtFoot: $0.47543889$
+      HeadCirc and LeftFoot: $0.46663709$
+      HeadCirc and Male: $0.48937530$
+```{r}
+physical = read.table("C:/Users/nhing/Stats 110 Dataset/PhysicalData.txt",fill=TRUE,header=TRUE)
+cor(physical)
+```
+
+b. When trying to use both male and female, one of the coefficients is N/A, which makes sense because you can only be one or the other.
+c. $\hat{y} = 50.6211 + 0.2193(RtFoot) + 1.3670(Male)$
+   Adjusted R-squared: $0.2433$
+```{r}
+fit.physical = lm(HeadCirc~RtFoot+Male, data=physical)
+physical$hat = hatvalues(fit.physical)
+summary(fit.physical)
+```
+d. The two highest leverage values are when Male = 1 for both and RtFoot = 23 and 32. The 2 highest leverage values are $0.1651079$ and $0.1396212$
+```{r}
+physical$leverage = hatvalues(fit.physical)
+head(physical[order(physical$leverage, decreasing=TRUE),])
+```
+    e. 
+```{r}
+plot(physical$RtFoot, physical$HeadCirc, xlab="Right Foot size" , ylab="Head Circumference")
+points(head(physical[order(physical$hat, decreasing=TRUE),])[1,"RtFoot"], head(physical[order(physical$hat, decreasing=TRUE),])[1,"HeadCirc"], col="red", cex=1.5 , pch=19)
+points(head(physical[order(physical$hat, decreasing=TRUE),])[2,"RtFoot"], head(physical[order(physical$hat, decreasing=TRUE),])[2,"HeadCirc"], col="red", cex=1.5 , pch=19)
+
+```
+    f. $\hat{y} = 51.2471 - 0.1132(LeftFoot) + 0.3057(RtFoot) + 1.4780(Male)$
+       Adjusted R-squared: $0.23$
+```{r}
+fit.physical2 = lm(HeadCirc~LeftFoot+RtFoot+Male, data=physical)
+physical$hat2 = hatvalues(fit.physical2)
+
+summary(fit.physical2)
+```
+g. No, it doesn't add much since the Sum Sq. value is really low for RtFoot.
+```{r}
+anova(fit.physical2)
+```
+h. SSE = $51(1.973)^2 = 198.529$
+   MSE = $59.429 + 3.065 + 11.956 + 3.892 = 78.342$
+i. The VIF is highest for LeftFoot and lowest for Male. This means that they are correlated.
+```{r}
+vif(fit.physical2)
+```
+j. The highest leverage is when RtFoot = $28$ and LeftFoot = $25.5$. The leverage is $0.12153404.$
+```{r}
+head(physical[order(physical$hat2, decreasing=TRUE),])
+```
+k. $H_0: \beta_1 = \beta_2 = 0.$
+   $H_A: \beta_1,\beta_2 \neq 0.$ 
+   Here, the p-value is $0.3193$, which is greater than $\alpha = 0.05.$ Therefore, we fail to reject the null hypothesis, and are able to use the model with both $\beta_1$ and $\beta_2$ to be $0$. 
+```{r}
+fit.physical3=lm(HeadCirc~Male, data = physical)
+anova(fit.physical3,fit.physical2)
+```
+l. Adjusted R-squared: $0.2658$
+```{r}
+full = lm(HeadCirc~.-Female, data=physical)
+
+forward = step(lm(HeadCirc~1, data=physical), scope=list(upper=full), direction="forward")
+
+summary(forward)
+```
+    m. 2 covariates: Male + LeftHand
+       3 covariates: Male + LeftHand + RtFoot
+```{r}
+
+library(leaps)
+
+subsets = regsubsets(HeadCirc~.-Female, data=physical)
+
+summary(subsets)
+```
+n. $\hat{y} = 46.0471 + 0.1476(LeftFoot) + 0.2745(RtFoot)$. The VIF values are the same for both LeftFoot and RtFoot, which is $9.156082.$
+```{r}
+fit.physical4 = lm(HeadCirc~LeftFoot + RtFoot, data=physical)
+summary(fit.physical4)
+```
+```{r}
+vif(fit.physical4)
+```
+o. The slope in this model is $0.4200$, which is a lot bigger than the slope in the model in part n, which is $0.1476$.
+
+```{r}
+fit.physical5 = lm(HeadCirc~LeftFoot, data=physical)
+summary(fit.physical5)
+```
+
+    
+    

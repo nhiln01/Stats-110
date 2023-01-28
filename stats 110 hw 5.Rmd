@@ -1,0 +1,129 @@
+---
+title: "stats 110 hw 5"
+author: "Nhi Nguyen"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1.a. Random assignment is impossible because you cannot assign the babies with different mothers. 
+  b. We cannot extend our samples results to the general population. It is not an experimental study.
+  
+2.
+```{r}
+Blood = read.table("C:/Users/nhing/Stats 110 Dataset/Blood.txt" , header=TRUE)
+```
+  a. 
+```{r}
+boxplot(Blood$SystolicBP ~ Blood$Overwt, ylab = "Blood pressure", xlab = "Weight group")
+```
+  
+  b. 
+  **Group 0**: mean: 136.3155, standard deviation: 27.26852, sample size: 187.
+  
+  **Group 1**: mean: 144.3670, standard deviation: 25.07864, sample size: 109.
+    
+  **Group 2**: mean: 153.1814, standard deviation: 27.81397, sample size: 204.
+```{r}
+tapply(Blood$SystolicBP, Blood$Overwt, mean)
+tapply(Blood$SystolicBP, Blood$Overwt, sd)
+tapply(Blood$SystolicBP, Blood$Overwt, length)
+```
+  c. The standard deviations shown in part b are roughly equal, so it is appropriate to conduct a test of variance.
+  d. Systolic $BP_{i,k} = \mu + \alpha_{k} + \epsilon_{i,k}$
+  
+  **Null hypothesis**: $\alpha_0 = \alpha_1 = \alpha_2 = 0$
+  
+  **Alternate hypothesis**: at least one of $\alpha_0, \alpha_1, \alpha_2$ is not equal to $0$.
+  
+  e. **Null hypothesis**: The mean blood pressure of the three weight groups are the same.
+  
+  **Alternate hypothesis**: At least one group's mean  blood pressure is different from the others.
+  
+  f. F test statistic: $19.02$. P-value: $1.1 \cdot 10^{-8}$. Since the p value is small, we reject the null hypothesis and claim that at least one of $\alpha_0, \alpha_1, \alpha_2$ is not equal to $0$.
+```{r}
+mod = aov (SystolicBP ~ as.factor(Overwt), data=Blood)
+summary(mod)
+```
+  g. 
+```{r}
+TukeyHSD(mod, ordered = T)
+```
+```{r}
+plot(TukeyHSD(mod, ordered = T))
+```
+  
+  h. Systolic $BP_{i,j,k} = \mu + \alpha_k + \beta_j + \epsilon_{k,j}$
+  i. 
+```{r}
+mod2 = aov (SystolicBP ~ as.factor(Overwt)+as.factor(Smoke), data=Blood)
+summary(mod2)
+```
+  j. **Null hypothesis**: $\beta_0 = \beta_1 = 0.$
+  
+  **Alternate hypothesis**: at least one of $\beta_0$ and $\beta_1$ is not equal to $0$.
+  
+  Since the p value is $0.000163$, which is small, we reject the null hypothesis and claim that at least one of $\beta_0$ and $\beta_1$ is not equal to $0$.
+  
+  k. Systolic $BP_{i,k,j} = \mu + \alpha_k + \beta_j + \gamma_{k,j} + \epsilon_{k,j}$
+  
+  l. **Null hypothesis**: $\gamma_{k,j} = 0.$ for $k = 0,1,2$ and $j = 0,1$.
+  
+  **Alternate hypothesis**: $\gamma_{k,j} \neq 0$ for $k = 0,1,2$ and $j = 0,1$.
+  
+  Since the p value is $0.583614$, which is large, we fail to reject the null hypothesis.
+```{r}
+mod3 = aov (SystolicBP ~ as.factor(Overwt)+as.factor(Smoke)+as.factor(Overwt)*as.factor(Smoke), data=Blood)
+summary(mod3)
+```
+  
+3.a. Response variable: amount eaten by rats; two factors: hormones (leptin or insulin) and sex (male or female).
+  
+  b. Hormones: experimental (2 levels); Sex: observational (2 levels).
+  
+  c. Based on the results, there exists an interaction term between the two factors since both sexes have different responses to both hormones.
+  
+4.a. Response variable: test scores; two factors: Noise level (high or low) and Hyperactive diagnosis (yes or no)
+
+  b. Noise level: experimental (2 levels); hyperactive diagnosis: observational (2 levels).
+  
+  c. Based on the results, there is no interaction between the two factors.
+  
+5.a. Mean of men: $(12 + 14)/2 = 13.$
+  
+  Mean of women: $(17 + 16)/2 = 16.5.$
+
+  Mean of treadmill: $(12 + 17)/2 = 14.5.$
+
+  Mean of rowing machine: $(14 + 16)/2 = 15$
+
+  $$\mu = (13 + 16.5)/2 = (14.5 + 15)/2 = 14.75$$
+
+  b. $\alpha_1 = 14.5 - 14.75 = -0.25$
+  
+  $\alpha_2 = 15 - 14.75 = 0.25$
+  
+  c. $\beta_1 = 13 - 14.75 = -1.75$
+  
+  $\beta_2 = 16.5 - 14.75 = 1.75$
+  
+  d. $\gamma_{11} = 12 - 14.5 - 13 + 14.75 = -0.75$
+  
+  $\gamma_{12} = 17 - 14.5 - 16.5 + 14.75 = 0.75$
+  
+  $\gamma_{21} = 14 - 15 - 13 + 14.75 = 0.75$
+  
+  $\gamma_{22} = 16 - 15 - 16.5 + 14.75 = -0.75$
+  
+6. 
+```{r pressure, echo=FALSE, fig.cap="A caption", out.width = '100%'}
+knitr::include_graphics("C:/Users/nhing/Documents/stats 110 hw5 q6.png")
+```
+
+  
+  

@@ -1,0 +1,164 @@
+---
+title: "Stats 110 Homework 2"
+author: "Nhi Nguyen"
+date: "2022-10-10"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. a. False
+   b. True
+   c. False
+   d. True
+   e. True
+   f. False
+   
+2. a. $R$ stays the same. Both measurements of weights and heights are positive and therefore, have a positive slope and correlation coefficient. Slope will change, but correlation coefficient should not change in this case
+   b. $R^{2}$ stays the same. If $R$ stays the same, then $R^{2}$ stays the same
+   c. The estimated $\beta_{1}$ changes. Different $X$ and $Y$ values are used to calculate $\beta_{1}$, so it does not stay the same.
+   d. The estimated $\beta_{0}$ changes. It's different because values of $Y$ are different.
+   e. The test statistic stays the same. Although the variables change, the correlation between explanatory and response stays the same
+   f. The residuals for each observation is different. Different response variables are used.
+   
+```{r}
+MidWestSales = read.table("C:/Users/nhing/Stats 110 Dataset/MidwestSales.txt",fill=TRUE,header=TRUE)
+names(MidWestSales)=c("id","price","sqft","bed","bath","ac","garage","pool","year","quality","style","lot","hwy")
+
+model = lm(price~sqft, data=MidWestSales)
+summary(model)
+```
+3. a. $\hat{y} = 159.069x - 81624.275$
+   b. Estimated slope is 159.069. This value represents the estimated price increase of a house per square foot increase.
+   c. Null hypothesis: The data does not have a linear correlation between price and square footage. $H_{0} = 0$
+      Alternate hypothesis: The data has a linear correlation between price and square footage. $H_{1} \neq 0$ 
+      test statistics: 32.570
+      p-value = 2e-16
+      The p-value is smaller than the level of significance, therefore we can reject the null hypothesis. 
+   d. Null hypothesis: The data does not have a positive linear correlation between price and square footage. $H_{0} = 0$
+      Alternate hypothesis: The data has a positive linear correlation between price and square footage. $H_{1} \neq 0$ 
+      test statistic: 32.570
+      p-value = 2e-16
+      The p-value is smaller than the level of significance, therefore we can reject the null hypothesis
+   e. Our 95% confidence interval is between 229260.2 and 243768.6
+```{r}
+predict(model,list(sqft = 2000),interval = "c")
+```
+   
+   f. Our 95% predicted interval is between 80794.5 and 392234.3
+```{r}
+predict(model,list(sqft = 2000),interval = "p")
+
+```
+
+   g. If the confidence level is decreased to 90%, then the prediction interval from part f decreases, meaning the interval is smaller.
+   h. No, our maximum square feet in our dataset is 5032.
+```{r}
+summary(MidWestSales)
+```
+   i. If our confidence interval increases to 100%, our interval will become infinite.
+   j. The estimate of $\sigma_{\epsilon}$ is 79179.05. This means that the average error of the model per value predicted per square feet.
+```{r}
+mse <- (summary(model)$sigma)^2
+sqrt(mse)
+```
+   k. Yes, it makes sense for $\sigma_{\epsilon}$ to stay the same because we are dealing with a linear relationship.
+     
+4. a. Since p-value is less than $\alpha = 0.05$, the latitude does have a linear relationship with the mortality.
+```{r}
+SkinCancer = read.table("C:/Users/nhing/Stats 110 Dataset/skincancer.txt",fill=TRUE,header=TRUE)
+modelsc = lm(Mort~Lat, data=SkinCancer)
+summary(modelsc)
+```
+   
+   b. The 99% confidence interval is 144.56 and 155.61
+     
+```{r}
+predict(modelsc,list(Lat = 40),interval = "c", level = 0.95)
+```
+     
+  c. The 99% prediction interval is 98.24 and 201.93
+     
+```{r}
+predict(modelsc,list(Lat = 40),interval = "p", level = 0.99)
+```
+  d. The centers of both the prediction interval and the confidence interval are the same. This is because this value is the estimate average sample mean, and both of these values rely on the already existing observations from the data set.
+  e. The width of the prediction interval is larger than the width of the confidence interval. This is because confidence interval only describes the data, while prediction interval describes future unknown observations.
+
+5. a. wider
+   b. same
+   c. narrower
+   d. wider
+   
+\vspace{0.1cm}
+
+6. $R^{2} = \frac{SSR}{SSR+SSE} = \frac{110}{110+40} = 0.733$
+
+\vspace{0.1cm}
+
+```{r}
+Pulse = read.table("C:/Users/nhing/Stats 110 Dataset/Pulse.txt",fill=TRUE,header=TRUE)
+Pulse$Smoker = ifelse(Pulse$Smoke==1, "Yes", "No")
+
+modelp = lm(Rest~Smoker, data=Pulse)
+summary(modelp)
+```
+7. a. Null hypothesis: $H_{0} = 0$
+      Alternate hypothesis: $H_{1} \neq 0$ 
+      test statistic: 2.429
+      p-value = 0.0159
+      Since the p-value is smaller than 0.05, we can reject the null hypothesis.
+   b. Even with the t value tests, we see that the p value is still smaller than 0.05, therefore, similar to part a., we still reject the null hypothesis.
+```{r}
+t.test(Pulse$Rest[Pulse$Smoker=="Yes"],Pulse$Rest[Pulse$Smoker == "No"],var.equal = TRUE)
+```
+   c. $\hat{y} = \beta_0 + \beta_1 X_1 + \beta_2X_2 $
+   d. If there is no interaction term, that means that the slopes for $X_1$ and $X_2$ are equal.
+   e. Multiple $R^2$ value is 0.06978
+      Estimate of $\sigma_\epsilon$ is 9.638
+```{r}
+modelp_e = lm(Rest~Smoker + Wgt, data=Pulse)
+summary(modelp_e)
+```
+   f. We have 229+3 = 232 observations
+   g. Null hypothesis: Weight and Smoker has no linear relationship with Pulse rate $P_{0} = 0$
+      Alternate hypothesis: Weight and Smoker has some linear relationship with Pulse rate $P_{1} \neq 0$ 
+      test statistic: 2.975
+      p-value = 0.0002531
+      Since the p-value is smaller than 0.05, we can reject the null hypothesis.
+   h. No, this is an observational study
+   i. From the scatterplot below, we see that for the smoker group, as weight increases, heart rate tends to decrease. However, there is no relationship between weight and heart rate for the non-smoker group.
+```{r}
+library(ggplot2)
+ggplot(Pulse, aes(Wgt, Rest, color = Smoker, shape=Smoker)) + geom_point()+geom_smooth(method="lm", se=FALSE)
+
+```
+   
+   j. $\hat{Rest}_i = \beta_0 + \beta_1 \text{Wgt} + \beta_2Smoker + \beta_3(Weight \cdot Smoker)$
+```{r}
+modelp_j = lm(Rest~Smoker + Wgt + Wgt*Smoker, data=Pulse)
+summary(modelp_j)
+```
+   
+   k. $\hat{y} = 80.43031 - 0.08095 \hat{x_{1}} + -10.03147 \hat{x_{2}} + 0.09473 \hat{x_{3}}$
+```{r}
+pformula <- lm(formula = Rest ~ Wgt + Smoker + Wgt*Smoker, data = Pulse)
+pformula
+```
+   l. $R^2 = 0.08105, \sigma_\epsilon = 9.6$
+      Both $\sigma_\epsilon$ values are very close with one another, while the $R^2$ value in this part is larger than part e.
+   m. Null hypothesis: Weight and Smoker does not have a linear relationship with Pulse rate $H_0 = 0$
+      Alternate hypothesis: Weight and Smoker has some kind of a linear relationship with Pulse rate $H_1 \neq 0$
+      test statistic: 1.672
+      p-value: 0.0002356
+   n. The model is part e is not a good fitting model. The $R^2$ value is only 0.06978, meaning it only explains 7% of the variance between weight and pulse rate
+   o. Exercise can be a potential confounder because it has an affect on one's heart rate. In addition, it can also affect weight, which in turns also could potentially have an affect on heart rate.
+   p. Null hypothesis: Neither weight nor smoker have a relationship with Pulse rate $H_0 = 0$
+      Alternate hypothesis: Both weight and smoker have some kind of relationship with Pulse rate $H_1 \neq 0$
+   
+
+    

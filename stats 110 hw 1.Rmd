@@ -1,0 +1,61 @@
+---
+title: "Stats 110 Homework 1"
+author: "Nhi Nguyen"
+date: "2022-10-02"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. a. There is a positive association between height of athlete and length of jump
+   b. The graph has a clear positive linear relationship between the x and y axis
+   c. A possible value of the correlation coefficient is 1. Since the data is increasing, -1, -0.7, and 0 are not possible. When using an estimated linear regression model, the slope of the line is closest to 1. 
+   d. Both the response and explanatory variables are quantitative.
+   e. The predicted jump for a 72in tall athlete is 82.3in.
+   f. The value 1.0534 in the estimated regression equation represents the change in distance a person can jump per inch of change in the person's height.
+   g. The value 6.4285 in the estimated regression equation does not have any significance to the coach in this case, as you cannot have someone who is 0in tall.
+   h. No, the coach cannot make any conclusions, as this is an observation study.
+   i. The intercept estimate 6.4285 would decrease because it was originally meant to measure athletes' height and distance in inches, and so you would have to divide this number by a conversion factor.
+   j. The intercept estimate 6.4285 would increase because it was originally meant to measure athletes' height and distance in feet, and so you would have to multiply this number by a conversion factor.
+   k. In this case, p2 would be greater than p1. For p1, the correlation coefficient would still be 1, as both units of distance and height are converted to feet. However, for p2, only the unit for height is converted to feet, and the unit for distance remains in inches. This causes the numerical difference in distance to be greater than the numerical difference in height, therefore causing the correlation coefficient to be greater than 1.
+   
+2. a. A randomized experiment is not possible since there are too many factors that can affect blood pressure, and the time that someone spends outside is just one factor.
+   b. No such conclusion can be made because this is an observation study
+   c. Although spending time with mother nature can be a factor in decreased blood pressure, other factors like exercise (in this case, jogging outside) can also be a possible confounder in decreased blood pressure.
+
+3. Categorical: AcceptStatus, Acceptance, Sex, 
+   Quantitative: BCPM, GPA, all subscores (VR, PS, WS, BS), MCAT, Apps
+   
+4. a. Response: verbal reasoning scores, Explanatory: male or female
+   b. Response: Acceptance Status, Explanatory: male or female
+   c. Response: MCAT scores, Explanatory: GPA
+   d. Response: Acceptance Status, Explanatory: BCPM
+
+5. a. See code below 
+   b. The GPAs for the between the accepted group and the denied group are pretty similar.    
+```{r}
+mcat = read.table("C:/Users/nhing/Stats 110 Dataset/MedGPA.txt",fill=TRUE,header=TRUE)
+summary(mcat[mcat$Accept=="A",]$GPA) # accepted
+summary(mcat[mcat$Accept=="D",]$GPA) # denied
+```
+
+6. a. $\hat{y} = 9.104x + 3.923$
+   b. $SSE = \Sigma_{i=1}^{n} (MCAT_{i} - (\beta_{0} + \beta_{1} \cdot GPA_{i}))^{2}$
+   c. Slope: 9.104. In theory, if your GPA score increases by 1 point, then your MCAT score would increase by 9.104 points
+   d. The number 3.923 in the regression equation represents the MCAT score of someone who hypothetically has a GPA of 0 (they can fail all of their classes).
+   e. The predicted MCAT score for someone with a GPA of 3.0 is 31.235
+      The predicted MCAT score for someone with a GPA of 4.0 is 40.339
+   f. The predicted difference is 18.208
+   g. No, no conclusions can be made because this is an observational study
+```{r}
+model = lm(MCAT~GPA, data=mcat)
+summary(model)
+```
+
+7. A causal relationship cannot be determined in an observational study because data is recorded without any modifications to the variables, and there are too many other factors that come into play to determine a true causal relationship. However, a causal relationship can be determined in a randomized experiment because the variables are controlled or modified in order to find a trend and determine the relationship.
+     
+

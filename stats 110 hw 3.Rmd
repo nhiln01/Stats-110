@@ -1,0 +1,106 @@
+---
+title: "Stats 110 Homework 3"
+author: "Nhi Nguyen"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1. a. Yes, Model 1 is nested under Model 2.
+   b. The null hypothesis would be that $X_1$ is not statistically significant, given the other X values in the model.
+   c. This means that $X_1$ is statistically important to $Y$ 
+   d. Null hypothesis: Set $H_0: \beta_2 = 0$, and alternate hypothesis: $H_A: \beta_2 \neq 0$.
+   e. Null hypothesis: $H_0: \beta_1 = \beta_2 = \beta_3 = 0$. 
+      Alternate hypothesis: at least one of $\beta_1, \beta_2$ or $\beta_3$ is not equal to 0.
+   f. Depending on the value of $X_2$ being 0 or 1, $X_1$ has different influences on $Y$ in this situation. When $X_2 = 0, X_1$ is only influencing $Y$ through $\beta_1$ term. When $X_2 = 1,$ $X_1$ will influence $Y$ through the $\beta_1$ term and the $\beta_3$ term. 
+  
+2. a. Need more information. The adjusted R-squared will be higher in Model 1 than Model 2 if the newly added explanatory variable $X_{p+1}$ adds statistical significance to the model. Reversely, the adjusted R-squared will be lower in Model 1 than Model if $X_{p+1}$ is not adding any value to the model.
+   b. Most likely to be yes. The SSTO value of Model 1 is most likely to be higher than Model 2, but only if the newly added explanatory variable $X_{p+1}$ adds to the sum of squared regression. Otherwise, the SSTO value stays the same.
+   c. No, Model 1 will have a lower SSE value (or most likely to have a lower SSE value) compared to Model 2. If the newly added explanatory variable's coefficient $\beta_{p+1}$ is 0, then the SSE for both models is the same. In the case that it isn't 0, the error of $X_{p+1}$ is added to the SSE of the reduced model, making Model 1's SSE lower than Model 2.
+   d. Yes, the slope $\beta_1$ is the same in both models.
+  
+3. a. $Y = \beta_0 + \beta_1 Hgt + \beta_2 Wgt + \beta_3 Smoke + \beta_4Hgt \cdot Wgt + e$
+   b. It makes sense to have a relationship between weight and height in the model because often time, those two factors have some kind of correlation to one another. For example, a person who is taller is likely to weigh more than a shorter person and vise versa. 
+   c. Shown below, the adjusted R-squared value is 0.08283
+```{r}
+Pulse = read.table("C:/Users/nhing/Stats 110 Dataset/Pulse.txt",fill=TRUE,header=TRUE)
+
+model = lm(Rest ~ Hgt + Wgt + Smoke + Hgt*Wgt, data = Pulse)
+summary(model)
+```
+   d. $SSE = 227 \cdot (9.528)^2 = 20607.7$
+   e. null: all $H_0: \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0$, 
+      alternative: $H_A:$ at least one of $\beta_1, \beta_2, \beta_3$ or $\beta_4$ is not equal to 0
+      test statistic: ? multiple? (-1.985, -1.337, 2.860, 1.307)
+      p-value: multiple (0.04832, 0.18249, 0.00463, 0.19264)
+      Since one of the p-vaues is less that 0.01, we reject the null hypothesis
+   f. Test $\beta_4$. 
+      Null hypothesis: $H_0: \beta_4 = 0$
+      Alternate hypothesis: $H_A: \beta_4 \neq 0$
+      p-value: $0.19264$
+      Since our p-value is high, we cannot reject the null hypothesis, meaning that the effect of height and weight is not statistically significant to the effect of resting heart rate.
+   g. Null hypothesis: $\beta_2= \beta_4 = 0$
+      Alternate hypothesis: $\beta_2 \neq 0$ and $\beta_4 \neq  0$
+      p-values: $0.18249$ and $0.19264$.
+   h. From part g, since our p-values are both high, weight is not statistically significant at all to this model, and is not needed in the model in any way or form.
+   i. As shown below, adding Weight to a model with Height already in it, it does not add anything to the sum of squared regression. 
+```{r}
+anova(model)
+```
+   j. $22866.7$
+      $SSE = 20609.5$ on $227$ degrees of freedom
+      $SSR = 1346.2 + 0.0 + 756.0 + 155.0 = 2257.2$
+      $SSTO = 20609.5 + 2257.2 = 22866.7$.
+   
+   k. $SSR: 1346.2$
+      $SSE: 20609.5 + 155.0 + 756.0 = 21520.5$
+      $SSTO: 22866.7$
+   
+   l. Exercise can be a potential confounder because it has an affect on one's heart rate. In addition, it can also affect weight, which in turns also could potentially have an affect on heart rate since it can affect both weight term ($\beta_2$) and the height and weight term ($\beta_4$).
+   
+   m. Based on the model shown, there is no evidence that the assumption of constant variance is invalid. Most values are around the 65-70 range.
+```{r}
+plot( fitted(model) , resid(model) , xlab="Fitted values" , ylab="Residuals" , main="Residuals vs Fitted")
+```
+   n. On the linearity assumption of the model that was fit, the plot from part m shows that there is a linear pattern.
+   
+   o. There doesn't seem to be any issues with the normality assumption for the errors, since the plot is fitted with our model.
+```{r}
+qqnorm(rstandard(model))
+```
+    p. Based on the data, it does not make sense to use the model from part a to predict the heart rate of someone who weighs $350$ pounds because the maximum weight in our data is $260$.
+```{r}
+summary(Pulse$Wgt)
+```
+
+4. a. $\hat{Arsenic} = \beta_0 + \beta_1Year + \beta_2Miles + \beta_3Year\cdot Miles + e$
+   b. $\hat{Lead} = \beta_0 + \beta_1Year + \beta_2I(clean) + e$
+   c. $\hat{Titanium} = \beta_0 + \beta_1Miles + \beta_2(Miles)^2 + e$
+   d. $\hat{Sulfide} = \beta_0 + \beta_1Year + \beta_2Miles + \beta_3Depth + \beta_4Year\cdot Miles + \beta_5Year\cdot Depth + \beta_6Miles\cdot Depth + e$
+     
+```{r}
+ThreeCars = read.table("C:/Users/nhing/Stats 110 Dataset/ThreeCars.txt", fill=TRUE, header=TRUE)
+plot(ThreeCars$Mileage,ThreeCars$Price)
+```
+5. a. Looking at the scatterplot, it seems like Price seems to decrease as Mileage increases.
+   
+   b. 
+   
+```{r}
+model.TC = lm(Mileage~Price, data=ThreeCars)
+plot( fitted(model.TC) , resid(model.TC) , xlab="Fitted values" , ylab="Residuals" , main="Residuals vs Fitted")
+```
+   c. The linear relationship shown in the plot in part b matches the scatterplot in part a. 
+   
+   d. With respect to the linear regression model, there's no constant variance since the data isn't evenly spread out.
+   
+   e. Based on the QQ plot, it is linear so there is no normality of errors.
+   
+```{r}
+qqnorm(rstandard(model.TC))
+```
+
